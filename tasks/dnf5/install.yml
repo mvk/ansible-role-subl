@@ -13,7 +13,7 @@
     dnf config-manager addrepo --overwrite --from-repofile="{{ mvk_subl_server }}/{{ mvk_subl_dnf_repo }}"
   become: true
 
-- name: "Attempt to dnf install the package {{ subl_dnf_package }}"
+- name: Attempt to dnf install the package sublime-text
   ansible.builtin.dnf:
     name: "{{ mvk_subl_dnf_package }}"
     state: present

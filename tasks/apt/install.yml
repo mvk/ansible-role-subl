@@ -13,15 +13,15 @@
   ansible.builtin.template:
     src: "{{ ansible_pkg_mgr }}/{{ item }}.j2"
     dest: "/{{ item }}"
-    owner: bin
-    group: wheel
+    owner: root
+    group: root
     mode: '0644'
   loop:
     - "{{ mvk_subl_apt_repo_path }}"
   become: true
 
 
-- name: "Install the package {{ subl_dnf_package }}"
+- name: Install package sublime-text
   ansible.builtin.apt:
     name: "{{ mvk_subl_dnf_package }}"
     state: present
