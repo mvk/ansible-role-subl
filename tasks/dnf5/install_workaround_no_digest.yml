@@ -1,0 +1,33 @@
+# License
+---
+# tasks for rpm packaging issues workaround
+
+- name: Download locall the package {{ mvk_subl_dnf_package }}
+  ansible.builtin.command:
+    cmd: dnf download {{ mvk_subl_dnf_package }} --destdir=/tmp
+  become: true
+  changed_when: false
+
+- name: Find the RPM file for {{ mvk_subl_dnf_package }}
+  ansible.builtin.find:
+    paths: /tmp
+    file_type: file
+    depth: 1
+    patterns: "{{ mvk_subl_dnf_package }}*.rpm"
+  register: found_files
+
+- name: Fail if we haven't found exactly 1 file
+  ansible.builtin.fail:
+    msg: "Failed to find one /tmp/{{ mvk_subl_dnf_package }}*.rpm file"
+  when:
+    - found_files.files | default([]) | length != 1
+
+
+- name: Force install RPM with nodigest flags
+  vars:
+    # Extracts the filename from stdout (e.g., "sublime-text-1.2.3.rpm")
+    # This regex assumes the output contains the filename ending in .rpm
+    rpm_filename: "{{ found_files.files[0].path }}"
+  ansible.builtin.command:
+    cmd: "rpm -ivh --nodigest --nofiledigest {{ rpm_filename }}"
+  become: true

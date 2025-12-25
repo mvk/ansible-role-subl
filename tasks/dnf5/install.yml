@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: MIT-0
+---
+# install using dnf
+
+- name: Import gpg public key
+  ansible.builtin.shell: |
+    rpm -v --import "{{ mvk_subl_server }}/{{ mvk_subl_dnf_key }}"
+  become: true
+
+
+- name: Create repository config file
+  ansible.builtin.shell: |
+    dnf config-manager addrepo --overwrite --from-repofile="{{ mvk_subl_server }}/{{ mvk_subl_dnf_repo }}"
+  become: true
+
+- name: "Attempt to dnf install the package {{ subl_dnf_package }}"
+  ansible.builtin.dnf:
+    name: "{{ mvk_subl_dnf_package }}"
+    state: present
+  register: initial_dnf_install
+  failed_when:
+    # 1. Did it fail? (rc != 0)
+    - initial_dnf_install.rc | default(0) != 0
+    # 2. IF it failed, was it NOT the specific digest error?
+    # (If the regex matches, the length > 0. The condition 'length == 0' becomes FALSE.
+    #  failed_when becomes FALSE. The task succeeds.)
+    - initial_dnf_install.failures | default([]) | select('match', '^Rpm transaction failed\.\x3a package ' ~ mvk_subl_dnf_package ~ '.* does not verify\x3a no digest$') | list | length == 0
+  become: true
+
+- name: Handle missing digest installation
+  ansible.builtin.include_tasks: dnf5/install_workaround_no_digest.yml
+  when:
+    - initial_dnf_install.rc | default(0) != 0
+    # Note: We must re-check the condition here to ensure we only run the fix
+    # when the specific digest error occurred.
+    - initial_dnf_install.failures | default([]) | select('match', '^Rpm transaction failed\.\x3a package ' ~ mvk_subl_dnf_package ~ '.* does not verify\x3a no digest$') | list | length > 0

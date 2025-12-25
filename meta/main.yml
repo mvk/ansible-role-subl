@@ -1,0 +1,31 @@
+#SPDX-License-Identifier: MIT-0
+galaxy_info:
+  author: Max Kovgan
+  description: Install Sublime Text editor
+
+  # If the issue tracker for your role is not on github, uncomment the
+  # next line and provide a value
+  # issue_tracker_url: http://example.com/issue/tracker
+  license: MIT
+
+  min_ansible_version: 2.1
+
+  # If this a Container Enabled role, provide the minimum Ansible Container version.
+  # min_ansible_container_version:
+  galaxy_tags: []
+  platforms:
+    - name: Fedora
+      versions:
+        - 42
+        - 43
+    - name: Debian
+      versions:
+        - bookworm
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - noble
+        - plucky
+        - questing
+
+dependencies: []

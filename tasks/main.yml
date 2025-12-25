@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: MIT-0
+---
+# tasks file for mvk.subl
+
+- name: "Install sublime for package manager {{ ansible_pkg_mgr }}"
+  ansible.builtin.include_tasks: "{{ ansible_pkg_mgr }}/install.yml"

@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: MIT-0
+---
+# install using dnf
+
+- name: Import gpg public key
+  ansible.builtin.get_url:
+    url: "{{ mvk_subl_server }}/{{ mvk_subl_apt_key }}"
+    dest: "{{ mvk_subl_apt_key_path }}"
+    mode: '0440'
+  become: true
+
+- name: Create repository sources file
+  ansible.builtin.template:
+    src: "{{ ansible_pkg_mgr }}/{{ item }}.j2"
+    dest: "/{{ item }}"
+    owner: bin
+    group: wheel
+    mode: '0644'
+  loop:
+    - "{{ mvk_subl_apt_repo_path }}"
+  become: true
+
+
+- name: "Install the package {{ subl_dnf_package }}"
+  ansible.builtin.apt:
+    name: "{{ mvk_subl_dnf_package }}"
+    state: present
+    update_cache: yes
+  become: true
+

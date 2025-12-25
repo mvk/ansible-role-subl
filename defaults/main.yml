@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT-0
+---
+# defaults file for mvk.subl
+mvk_subl_release: "stable"
+mvk_subl_server: "https://download.sublimetext.com"
+mvk_subl_dnf_package: "sublime-text"
+mvk_subl_dnf_key: "sublimehq-rpm-pub.gpg"
+mvk_subl_dnf_repo: "rpm/{{ mvk_subl_release }}/{{ ansible_architecture }}/{{ mvk_subl_dnf_package }}.repo"
+
+
+mvk_subl_apt_key: "sublimehq-pub.gpg"
+mvk_subl_apt_key_path: "/etc/apt/keyrings/sublimehq-pub.asc"
+mvk_subl_apt_repo_path: "etc/apt/sources.list.d/{{ mvk_subl_dnf_package }}.sources"
+
