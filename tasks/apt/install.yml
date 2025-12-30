@@ -25,6 +25,5 @@
   ansible.builtin.apt:
     name: "{{ mvk_subl_dnf_package }}"
     state: present
-    update_cache: yes
+    update_cache: true
   become: true
-

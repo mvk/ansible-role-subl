@@ -1,7 +1,6 @@
-# X-SPD
+# SPDX-License-Identifier: MIT-0
 ---
-# install packages
-#
+# install packages for role subl
 
 - name: Ensure Sublime Text User directory exists
   ansible.builtin.file:

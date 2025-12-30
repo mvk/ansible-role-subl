@@ -6,6 +6,7 @@
   ansible.builtin.shell: |
     rpm -v --import "{{ mvk_subl_server }}/{{ mvk_subl_dnf_key }}"
   become: true
+  # noqa: command-instead-of-module no-changed-when
 
 
 - name: Create repository config file
@@ -13,7 +14,13 @@
     dnf config-manager addrepo --overwrite --from-repofile="{{ mvk_subl_server }}/{{ mvk_subl_dnf_repo }}"
   become: true
 
+- name: Setup regex guard variables
+  ansible.builtin.set_fact:
+    regex_str: "^Rpm transaction failed.: package {{ mvk_subl_dnf_package }}.* does not verify: no digest$"
+
 - name: Attempt to dnf install the package sublime-text
+  vars:
+    regex_str: "{{ prefix + mvk_subl_dnf_package + suffix }}"
   ansible.builtin.dnf:
     name: "{{ mvk_subl_dnf_package }}"
     state: present
@@ -24,7 +31,7 @@
     # 2. IF it failed, was it NOT the specific digest error?
     # (If the regex matches, the length > 0. The condition 'length == 0' becomes FALSE.
     #  failed_when becomes FALSE. The task succeeds.)
-    - initial_dnf_install.failures | default([]) | select('match', '^Rpm transaction failed\.\x3a package ' ~ mvk_subl_dnf_package ~ '.* does not verify\x3a no digest$') | list | length == 0
+    - initial_dnf_install.failures | default([]) | select('match', regex_str) | list | length == 0
   become: true
 
 - name: Handle missing digest installation
@@ -33,4 +40,4 @@
     - initial_dnf_install.rc | default(0) != 0
     # Note: We must re-check the condition here to ensure we only run the fix
     # when the specific digest error occurred.
-    - initial_dnf_install.failures | default([]) | select('match', '^Rpm transaction failed\.\x3a package ' ~ mvk_subl_dnf_package ~ '.* does not verify\x3a no digest$') | list | length > 0
+    - initial_dnf_install.failures | default([]) | select('match', regex_str) | list | length > 0
