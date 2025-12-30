@@ -33,6 +33,16 @@ Description: Install Sublime Text editor
 | [mvk_subl_apt_key](defaults/main.yml#L11)   | str | `sublimehq-pub.gpg` |    
 | [mvk_subl_apt_key_path](defaults/main.yml#L12)   | str | `/etc/apt/keyrings/sublimehq-pub.asc` |    
 | [mvk_subl_apt_repo_path](defaults/main.yml#L13)   | str | `etc/apt/sources.list.d/{{ mvk_subl_dnf_package }}.sources` |    
+| [mvk_subl_packages](defaults/main.yml#L16)   | list | `[]` |    
+| [mvk_subl_packages.**0**](defaults/main.yml#L17)   | str | `A File Icon` |    
+| [mvk_subl_packages.**1**](defaults/main.yml#L18)   | str | `Emmet` |    
+| [mvk_subl_packages.**2**](defaults/main.yml#L19)   | str | `SideBarEnhancements` |    
+| [mvk_subl_packages.**3**](defaults/main.yml#L20)   | str | `Terminus` |    
+| [mvk_subl_packages.**4**](defaults/main.yml#L21)   | str | `GitGutter` |    
+| [mvk_subl_packages.**5**](defaults/main.yml#L22)   | str | `Jinja2` |    
+| [mvk_subl_packages.**6**](defaults/main.yml#L23)   | str | `Ansible` |    
+| [mvk_subl_packages.**7**](defaults/main.yml#L24)   | str | `Ansible Vault` |    
+| [mvk_subl_license](defaults/main.yml#L24)   | str |  |    
 
 
 
@@ -67,11 +77,36 @@ Description: Install Sublime Text editor
 | Fail if we haven't found exactly 1 file | ansible.builtin.fail | True |
 | Force install RPM ignoring file and contents digests | ansible.builtin.command | False |
 
+#### File: tasks/license.yml
+
+| Name | Module | Has Conditions |
+| ---- | ------ | -------------- |
+| Ensure Sublime Text Local directory exists | file | False |
+| Deploy Sublime Text License | copy | False |
+
 #### File: tasks/main.yml
 
 | Name | Module | Has Conditions |
 | ---- | ------ | -------------- |
 | Install sublime for package manager {{ ansible_pkg_mgr }} | ansible.builtin.include_tasks | False |
+| Install sublime Package Control | ansible.builtin.include_tasks | False |
+| Install sublime packages | ansible.builtin.include_tasks | True |
+| Install sublime license is mvk_subl_license is set | ansible.builtin.include_tasks | True |
+
+#### File: tasks/package-control.yml
+
+| Name | Module | Has Conditions |
+| ---- | ------ | -------------- |
+| Calculate install_dir | ansible.builtin.set_fact | False |
+| Create install_dir | ansible.builtin.file | False |
+| Download Package Control package | ansible.builtin.get_url | False |
+
+#### File: tasks/packages.yml
+
+| Name | Module | Has Conditions |
+| ---- | ------ | -------------- |
+| Ensure Sublime Text User directory exists | ansible.builtin.file | False |
+| Deploy Package Control settings | ansible.builtin.copy | False |
 
 
 ## Task Flow Graphs
@@ -143,6 +178,26 @@ classDef rescue stroke:#665352,stroke-width:2px;
 ```
 
 
+### Graph for license.yml
+
+```mermaid
+flowchart TD
+Start
+classDef block stroke:#3498db,stroke-width:2px;
+classDef task stroke:#4b76bb,stroke-width:2px;
+classDef includeTasks stroke:#16a085,stroke-width:2px;
+classDef importTasks stroke:#34495e,stroke-width:2px;
+classDef includeRole stroke:#2980b9,stroke-width:2px;
+classDef importRole stroke:#699ba7,stroke-width:2px;
+classDef includeVars stroke:#8e44ad,stroke-width:2px;
+classDef rescue stroke:#665352,stroke-width:2px;
+
+  Start-->|Task| Ensure_Sublime_Text_Local_directory_exists0[ensure sublime text local directory exists]:::task
+  Ensure_Sublime_Text_Local_directory_exists0-->|Task| Deploy_Sublime_Text_License1[deploy sublime text license]:::task
+  Deploy_Sublime_Text_License1-->End
+```
+
+
 ### Graph for main.yml
 
 ```mermaid
@@ -158,7 +213,51 @@ classDef includeVars stroke:#8e44ad,stroke-width:2px;
 classDef rescue stroke:#665352,stroke-width:2px;
 
   Start-->|Include task| Install_sublime_for_package_manager_ansible_pkg_mgr____ansible_pkg_mgr____install_yml_0[install sublime for package manager ansible pkg<br>mgr<br>include_task:    ansible pkg mgr    install yml]:::includeTasks
-  Install_sublime_for_package_manager_ansible_pkg_mgr____ansible_pkg_mgr____install_yml_0-->End
+  Install_sublime_for_package_manager_ansible_pkg_mgr____ansible_pkg_mgr____install_yml_0-->|Include task| Install_sublime_Package_Control_package_control_yml_1[install sublime package control<br>include_task: package control yml]:::includeTasks
+  Install_sublime_Package_Control_package_control_yml_1-->|Include task| Install_sublime_packages_packages_yml_2[install sublime packages<br>When: **mvk subl packages   default       length   0**<br>include_task: packages yml]:::includeTasks
+  Install_sublime_packages_packages_yml_2-->|Include task| Install_sublime_license_is_mvk_subl_license_is_set_license_yml_3[install sublime license is mvk subl license is set<br>When: **mvk subl license   default       length   0**<br>include_task: license yml]:::includeTasks
+  Install_sublime_license_is_mvk_subl_license_is_set_license_yml_3-->End
+```
+
+
+### Graph for package-control.yml
+
+```mermaid
+flowchart TD
+Start
+classDef block stroke:#3498db,stroke-width:2px;
+classDef task stroke:#4b76bb,stroke-width:2px;
+classDef includeTasks stroke:#16a085,stroke-width:2px;
+classDef importTasks stroke:#34495e,stroke-width:2px;
+classDef includeRole stroke:#2980b9,stroke-width:2px;
+classDef importRole stroke:#699ba7,stroke-width:2px;
+classDef includeVars stroke:#8e44ad,stroke-width:2px;
+classDef rescue stroke:#665352,stroke-width:2px;
+
+  Start-->|Task| Calculate_install_dir0[calculate install dir]:::task
+  Calculate_install_dir0-->|Task| Create_install_dir1[create install dir]:::task
+  Create_install_dir1-->|Task| Download_Package_Control_package2[download package control package]:::task
+  Download_Package_Control_package2-->End
+```
+
+
+### Graph for packages.yml
+
+```mermaid
+flowchart TD
+Start
+classDef block stroke:#3498db,stroke-width:2px;
+classDef task stroke:#4b76bb,stroke-width:2px;
+classDef includeTasks stroke:#16a085,stroke-width:2px;
+classDef importTasks stroke:#34495e,stroke-width:2px;
+classDef includeRole stroke:#2980b9,stroke-width:2px;
+classDef importRole stroke:#699ba7,stroke-width:2px;
+classDef includeVars stroke:#8e44ad,stroke-width:2px;
+classDef rescue stroke:#665352,stroke-width:2px;
+
+  Start-->|Task| Ensure_Sublime_Text_User_directory_exists0[ensure sublime text user directory exists]:::task
+  Ensure_Sublime_Text_User_directory_exists0-->|Task| Deploy_Package_Control_settings1[deploy package control settings]:::task
+  Deploy_Package_Control_settings1-->End
 ```
 
 

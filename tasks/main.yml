@@ -2,5 +2,18 @@
 ---
 # tasks file for mvk.subl
 
-- name: "Install sublime for package manager {{ ansible_pkg_mgr }}"
+- name: Install sublime for package manager {{ ansible_pkg_mgr }}
   ansible.builtin.include_tasks: "{{ ansible_pkg_mgr }}/install.yml"
+
+- name: Install sublime Package Control
+  ansible.builtin.include_tasks: "package-control.yml"
+
+- name: Install sublime packages
+  ansible.builtin.include_tasks: "packages.yml"
+  when:
+    - mvk_subl_packages | default([]) | length > 0
+
+- name: Install sublime license is mvk_subl_license is set
+  ansible.builtin.include_tasks: "license.yml"
+  when:
+    - mvk_subl_license | default("") | length > 0

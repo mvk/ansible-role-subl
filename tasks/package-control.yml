@@ -1,0 +1,22 @@
+# X
+---
+# package control setup + packages list handling
+
+- name: Calculate install_dir
+  ansible.builtin.set_fact:
+    install_dir: "{{ ansible_user_dir }}/.config/sublime-text/Installed Packages"
+    pkg_server: "https://packagecontrol.io"
+    package: "Package Control"
+
+- name: Create install_dir
+  ansible.builtin.file:
+    path: "{{ install_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Download Package Control package
+  ansible.builtin.get_url:
+    url: "{{ pkg_server }}/{{ package | urlencode }}.sublime-package"
+    dest: "{{ install_dir }}/{{ package }}.sublime-package"
+    mode: '0640'
+    force: true

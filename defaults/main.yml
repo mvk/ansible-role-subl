@@ -12,3 +12,14 @@ mvk_subl_apt_key: "sublimehq-pub.gpg"
 mvk_subl_apt_key_path: "/etc/apt/keyrings/sublimehq-pub.asc"
 mvk_subl_apt_repo_path: "etc/apt/sources.list.d/{{ mvk_subl_dnf_package }}.sources"
 
+
+mvk_subl_packages:
+  - "A File Icon"
+  - "Emmet"
+  - "SideBarEnhancements"
+  - "Terminus"
+  - "GitGutter"
+  - "Jinja2"
+  - "Ansible"
+  - "Ansible Vault"
+mvk_subl_license: ""
