@@ -1,8 +1,7 @@
 <!-- DOCSIBLE START -->
-
 # 📃 Role overview
 
-## mvk_subl
+## mvk.subl
 
 
 
@@ -65,6 +64,7 @@ Description: Install Sublime Text editor
 | ---- | ------ | -------------- |
 | Import gpg public key | ansible.builtin.shell | False |
 | Create repository config file | ansible.builtin.shell | False |
+| Setup regex guard variables | ansible.builtin.set_fact | False |
 | Attempt to dnf install the package sublime-text | ansible.builtin.dnf | False |
 | Handle missing digest installation | ansible.builtin.include_tasks | True |
 
@@ -75,14 +75,14 @@ Description: Install Sublime Text editor
 | Download locall the package sublime-text | ansible.builtin.command | False |
 | Find the RPM file for sublime-text | ansible.builtin.find | False |
 | Fail if we haven't found exactly 1 file | ansible.builtin.fail | True |
-| Force install RPM ignoring file and contents digests | ansible.builtin.command | False |
+| Force install RPM ignoring file and contents digests | ansible.builtin.shell | False |
 
 #### File: tasks/license.yml
 
 | Name | Module | Has Conditions |
 | ---- | ------ | -------------- |
-| Ensure Sublime Text Local directory exists | file | False |
-| Deploy Sublime Text License | copy | False |
+| Ensure Sublime Text Local directory exists | ansible.builtin.file | False |
+| Deploy Sublime Text License | ansible.builtin.copy | False |
 
 #### File: tasks/main.yml
 
@@ -150,9 +150,10 @@ classDef rescue stroke:#665352,stroke-width:2px;
 
   Start-->|Task| Import_gpg_public_key0[import gpg public key]:::task
   Import_gpg_public_key0-->|Task| Create_repository_config_file1[create repository config file]:::task
-  Create_repository_config_file1-->|Task| Attempt_to_dnf_install_the_package_sublime_text2[attempt to dnf install the package sublime text]:::task
-  Attempt_to_dnf_install_the_package_sublime_text2-->|Include task| Handle_missing_digest_installation_dnf5_install_workaround_no_digest_yml_3[handle missing digest installation<br>When: **initial dnf install rc   default 0     0 and<br>initial dnf install failures   default      <br>select  match     rpm transaction failed   x3a<br>package     mvk subl dnf package       does not<br>verify x3a no digest      list   length   0**<br>include_task: dnf5 install workaround no digest yml]:::includeTasks
-  Handle_missing_digest_installation_dnf5_install_workaround_no_digest_yml_3-->End
+  Create_repository_config_file1-->|Task| Setup_regex_guard_variables2[setup regex guard variables]:::task
+  Setup_regex_guard_variables2-->|Task| Attempt_to_dnf_install_the_package_sublime_text3[attempt to dnf install the package sublime text]:::task
+  Attempt_to_dnf_install_the_package_sublime_text3-->|Include task| Handle_missing_digest_installation_dnf5_install_workaround_no_digest_yml_4[handle missing digest installation<br>When: **initial dnf install rc   default 0     0 and<br>initial dnf install failures   default      <br>select  match   regex str    list   length   0**<br>include_task: dnf5 install workaround no digest yml]:::includeTasks
+  Handle_missing_digest_installation_dnf5_install_workaround_no_digest_yml_4-->End
 ```
 
 
@@ -277,7 +278,7 @@ MIT
 
 #### Platforms
 
-- **Fedora**: [42, 43]
+- **Fedora**: ['42', '43']
 - **Debian**: ['bookworm', 'bullseye']
 - **Ubuntu**: ['noble', 'plucky', 'questing']
 
