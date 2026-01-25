@@ -2,13 +2,13 @@
 ---
 # tasks for rpm packaging issues workaround
 
-- name: Download locall the package {{ mvk_subl_dnf_package }}
+- name: Download locall the package sublime-text
   ansible.builtin.command:
     cmd: dnf download {{ mvk_subl_dnf_package }} --destdir=/tmp
   become: true
   changed_when: false
 
-- name: Find the RPM file for {{ mvk_subl_dnf_package }}
+- name: Find the RPM file for sublime-text
   ansible.builtin.find:
     paths: /tmp
     file_type: file
@@ -22,8 +22,7 @@
   when:
     - found_files.files | default([]) | length != 1
 
-
-- name: Force install RPM with nodigest flags
+- name: Force install RPM ignoring file and contents digests
   vars:
     # Extracts the filename from stdout (e.g., "sublime-text-1.2.3.rpm")
     # This regex assumes the output contains the filename ending in .rpm

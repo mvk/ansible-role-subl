@@ -47,7 +47,7 @@ Description: Install Sublime Text editor
 | ---- | ------ | -------------- |
 | Import gpg public key | ansible.builtin.get_url | False |
 | Create repository sources file | ansible.builtin.template | False |
-| Install the package {{ subl_dnf_package }} | ansible.builtin.apt | False |
+| Install package sublime-text | ansible.builtin.apt | False |
 
 #### File: tasks/dnf5/install.yml
 
@@ -55,17 +55,17 @@ Description: Install Sublime Text editor
 | ---- | ------ | -------------- |
 | Import gpg public key | ansible.builtin.shell | False |
 | Create repository config file | ansible.builtin.shell | False |
-| Attempt to dnf install the package {{ subl_dnf_package }} | ansible.builtin.dnf | False |
+| Attempt to dnf install the package sublime-text | ansible.builtin.dnf | False |
 | Handle missing digest installation | ansible.builtin.include_tasks | True |
 
 #### File: tasks/dnf5/install_workaround_no_digest.yml
 
 | Name | Module | Has Conditions |
 | ---- | ------ | -------------- |
-| Download locall the package {{ mvk_subl_dnf_package }} | ansible.builtin.command | False |
-| Find the RPM file for {{ mvk_subl_dnf_package }} | ansible.builtin.find | False |
+| Download locall the package sublime-text | ansible.builtin.command | False |
+| Find the RPM file for sublime-text | ansible.builtin.find | False |
 | Fail if we haven't found exactly 1 file | ansible.builtin.fail | True |
-| Force install RPM with nodigest flags | ansible.builtin.command | False |
+| Force install RPM ignoring file and contents digests | ansible.builtin.command | False |
 
 #### File: tasks/main.yml
 
@@ -94,8 +94,8 @@ classDef rescue stroke:#665352,stroke-width:2px;
 
   Start-->|Task| Import_gpg_public_key0[import gpg public key]:::task
   Import_gpg_public_key0-->|Task| Create_repository_sources_file1[create repository sources file]:::task
-  Create_repository_sources_file1-->|Task| Install_the_package_subl_dnf_package2[install the package subl dnf package]:::task
-  Install_the_package_subl_dnf_package2-->End
+  Create_repository_sources_file1-->|Task| Install_package_sublime_text2[install package sublime text]:::task
+  Install_package_sublime_text2-->End
 ```
 
 
@@ -115,8 +115,8 @@ classDef rescue stroke:#665352,stroke-width:2px;
 
   Start-->|Task| Import_gpg_public_key0[import gpg public key]:::task
   Import_gpg_public_key0-->|Task| Create_repository_config_file1[create repository config file]:::task
-  Create_repository_config_file1-->|Task| Attempt_to_dnf_install_the_package_subl_dnf_package2[attempt to dnf install the package subl dnf<br>package]:::task
-  Attempt_to_dnf_install_the_package_subl_dnf_package2-->|Include task| Handle_missing_digest_installation_dnf5_install_workaround_no_digest_yml_3[handle missing digest installation<br>When: **initial dnf install rc   default 0     0 and<br>initial dnf install failures   default      <br>select  match     rpm transaction failed   x3a<br>package     mvk subl dnf package       does not<br>verify x3a no digest      list   length   0**<br>include_task: dnf5 install workaround no digest yml]:::includeTasks
+  Create_repository_config_file1-->|Task| Attempt_to_dnf_install_the_package_sublime_text2[attempt to dnf install the package sublime text]:::task
+  Attempt_to_dnf_install_the_package_sublime_text2-->|Include task| Handle_missing_digest_installation_dnf5_install_workaround_no_digest_yml_3[handle missing digest installation<br>When: **initial dnf install rc   default 0     0 and<br>initial dnf install failures   default      <br>select  match     rpm transaction failed   x3a<br>package     mvk subl dnf package       does not<br>verify x3a no digest      list   length   0**<br>include_task: dnf5 install workaround no digest yml]:::includeTasks
   Handle_missing_digest_installation_dnf5_install_workaround_no_digest_yml_3-->End
 ```
 
@@ -135,11 +135,11 @@ classDef importRole stroke:#699ba7,stroke-width:2px;
 classDef includeVars stroke:#8e44ad,stroke-width:2px;
 classDef rescue stroke:#665352,stroke-width:2px;
 
-  Start-->|Task| Download_locall_the_package_mvk_subl_dnf_package0[download locall the package mvk subl dnf package]:::task
-  Download_locall_the_package_mvk_subl_dnf_package0-->|Task| Find_the_RPM_file_for_mvk_subl_dnf_package1[find the rpm file for mvk subl dnf package]:::task
-  Find_the_RPM_file_for_mvk_subl_dnf_package1-->|Task| Fail_if_we_haven_t_found_exactly_1_file2[fail if we haven t found exactly 1 file<br>When: **found files files   default       length    1**]:::task
-  Fail_if_we_haven_t_found_exactly_1_file2-->|Task| Force_install_RPM_with_nodigest_flags3[force install rpm with nodigest flags]:::task
-  Force_install_RPM_with_nodigest_flags3-->End
+  Start-->|Task| Download_locall_the_package_sublime_text0[download locall the package sublime text]:::task
+  Download_locall_the_package_sublime_text0-->|Task| Find_the_RPM_file_for_sublime_text1[find the rpm file for sublime text]:::task
+  Find_the_RPM_file_for_sublime_text1-->|Task| Fail_if_we_haven_t_found_exactly_1_file2[fail if we haven t found exactly 1 file<br>When: **found files files   default       length    1**]:::task
+  Fail_if_we_haven_t_found_exactly_1_file2-->|Task| Force_install_RPM_ignoring_file_and_contents_digests3[force install rpm ignoring file and contents<br>digests]:::task
+  Force_install_RPM_ignoring_file_and_contents_digests3-->End
 ```
 
 
