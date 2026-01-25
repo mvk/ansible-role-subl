@@ -15,11 +15,11 @@ mvk_subl_apt_repo_path: "etc/apt/sources.list.d/{{ mvk_subl_dnf_package }}.sourc
 
 mvk_subl_packages:
   - "A File Icon"
+  - "Ansible Vault"
+  - "Ansible"
   - "Emmet"
-  - "SideBarEnhancements"
-  - "Terminus"
   - "GitGutter"
   - "Jinja2"
-  - "Ansible"
-  - "Ansible Vault"
+  - "SideBarEnhancements"
+  - "Terminus"
 mvk_subl_license: ""
