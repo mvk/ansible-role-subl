@@ -1,4 +1,4 @@
-# License
+# SPDX-License-Identifier: MIT-0
 ---
 # tasks for rpm packaging issues workaround
 
@@ -27,6 +27,13 @@
     # Extracts the filename from stdout (e.g., "sublime-text-1.2.3.rpm")
     # This regex assumes the output contains the filename ending in .rpm
     rpm_filename: "{{ found_files.files[0].path }}"
-  ansible.builtin.command:
-    cmd: "rpm -ivh --nodigest --nofiledigest {{ rpm_filename }}"
+  ansible.builtin.shell: |
+    PKG_ID="$(rpm -qp --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}' /tmp/pkg.rpm 2>/dev/null)"
+    if ! rpm -q "$PKG_ID" >/dev/null 2>&1; then
+      rpm -ivh --nodigest --nofiledigest "{{ rpm_filename }}"
+    fi
+  args:
+    executable: /bin/bash
   become: true
+  register: rpm_install_result
+  # noqa: command-instead-of-module no-changed-when

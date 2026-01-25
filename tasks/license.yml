@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT-0
+---
+
+- name: Ensure Sublime Text Local directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.config/sublime-text/Local"
+    state: directory
+    mode: '0700' # Restrict access since it will hold the license
+
+- name: Deploy Sublime Text License
+  ansible.builtin.copy:
+    dest: "{{ ansible_user_dir }}/.config/sublime-text/Local/License.sublime_license"
+    content: "{{ mvk_subl_license }}"
+    mode: '0600' # Read/write only for the user
